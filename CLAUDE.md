@@ -60,8 +60,8 @@ Spec/SwiftOpenSkills.md          — Full specification
 | Dependency | Role | Targets |
 |---|---|---|
 | [Yams](https://github.com/jpsim/Yams.git) (`from: "5.1.0"`) | YAML frontmatter parsing | `SwiftOpenSkills` |
-| [SwiftOpenResponsesDSL](https://github.com/RichNasz/SwiftOpenResponsesDSL) (`branch: "main"`) | Responses API agent integration | `SwiftOpenSkillsResponses` |
-| [SwiftChatCompletionsDSL](https://github.com/RichNasz/SwiftChatCompletionsDSL) (`branch: "main"`) | Chat Completions agent integration | `SwiftOpenSkillsChat` |
+| [SwiftOpenResponsesDSL](https://github.com/RichNasz/SwiftOpenResponsesDSL) (`branch: "main"`) | [Open Responses API](https://www.openresponses.org/) agent integration *(recommended)* | `SwiftOpenSkillsResponses` |
+| [SwiftChatCompletionsDSL](https://github.com/RichNasz/SwiftChatCompletionsDSL) (`branch: "main"`) | Legacy Chat Completions API agent integration | `SwiftOpenSkillsChat` |
 | [SwiftLLMToolMacros](https://github.com/RichNasz/SwiftLLMToolMacros) (`branch: "main"`) | `ToolDefinition` and `JSONSchemaValue` types | Integration targets |
 | [swift-argument-parser](https://github.com/apple/swift-argument-parser) (`from: "1.5.0"`) | CLI argument parsing | Example executables |
 

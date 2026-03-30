@@ -4,7 +4,7 @@
 
 ## Overview
 
-SwiftOpenSkills is a Swift Package Manager library that provides first-class, native Swift support for the open Agent Skills standard. It is the official skill integration companion to `SwiftOpenResponsesDSL` and `SwiftChatCompletionsDSL`.
+SwiftOpenSkills is a Swift Package Manager library that provides first-class, native Swift support for the open Agent Skills standard. It is the official skill integration companion to `SwiftOpenResponsesDSL` — the recommended Swift library for agentic workflows built on the [Open Responses API](https://www.openresponses.org/) — and `SwiftChatCompletionsDSL` for projects using the legacy Chat Completions API.
 
 The package handles discovery, parsing, catalog generation, and activation of Agent Skills so they can be used side-by-side with tools during LLM inference calls, following the progressive disclosure pattern defined by the Agent Skills standard.
 
@@ -471,7 +471,7 @@ Resources: checklist.md   ← only if resources/ directory exists
 | Dependency | Role | Targets |
 |---|---|---|
 | [Yams](https://github.com/jpsim/Yams) | YAML frontmatter parsing | `SwiftOpenSkills` |
-| [SwiftOpenResponsesDSL](https://github.com/RichNasz/SwiftOpenResponsesDSL) | Responses API agent integration | `SwiftOpenSkillsResponses` |
-| [SwiftChatCompletionsDSL](https://github.com/RichNasz/SwiftChatCompletionsDSL) | Chat Completions agent integration | `SwiftOpenSkillsChat` |
+| [SwiftOpenResponsesDSL](https://github.com/RichNasz/SwiftOpenResponsesDSL) | [Open Responses API](https://www.openresponses.org/) agent integration *(recommended)* | `SwiftOpenSkillsResponses` |
+| [SwiftChatCompletionsDSL](https://github.com/RichNasz/SwiftChatCompletionsDSL) | Legacy Chat Completions API agent integration | `SwiftOpenSkillsChat` |
 | [SwiftLLMToolMacros](https://github.com/RichNasz/SwiftLLMToolMacros) | `ToolDefinition` and `JSONSchemaValue` types | Integration targets |
 | [swift-argument-parser](https://github.com/apple/swift-argument-parser) | CLI argument parsing | Example executables |

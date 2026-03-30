@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Built with Claude Code](https://img.shields.io/badge/Built%20with-Claude%20Code-blueviolet?logo=claude)](https://claude.ai/code)
 
-A Swift Package Manager library providing first-class, native Swift support for the [open Agent Skills standard](https://agentskills.io) — the official skills integration companion to [SwiftOpenResponsesDSL](https://github.com/RichNasz/SwiftOpenResponsesDSL) and [SwiftChatCompletionsDSL](https://github.com/RichNasz/SwiftChatCompletionsDSL).
+A Swift Package Manager library providing first-class, native Swift support for the [open Agent Skills standard](https://agentskills.io) — the official skills integration companion to [SwiftOpenResponsesDSL](https://github.com/RichNasz/SwiftOpenResponsesDSL), the recommended Swift library for building agentic workflows on the [Open Responses API](https://www.openresponses.org/).
 
 ## Overview
 
@@ -34,8 +34,8 @@ Then add the product you need to your target:
 | Product | Use when |
 |---|---|
 | `SwiftOpenSkills` | Core only — no DSL dependency |
-| `SwiftOpenSkillsResponses` | Integrating with `SwiftOpenResponsesDSL` |
-| `SwiftOpenSkillsChat` | Integrating with `SwiftChatCompletionsDSL` |
+| `SwiftOpenSkillsResponses` | Integrating with `SwiftOpenResponsesDSL` *(recommended)* |
+| `SwiftOpenSkillsChat` | Integrating with `SwiftChatCompletionsDSL` *(legacy Chat Completions API)* |
 
 ```swift
 .target(
@@ -137,7 +137,7 @@ SkillDiscovery(.standard, .directory(fallbackURL))
 - Swift 6.2+
 - macOS 13.0+ / iOS 16.0+
 - Depends on [Yams](https://github.com/jpsim/Yams) 5.1+ for YAML frontmatter parsing (core target only)
-- Optional: [SwiftOpenResponsesDSL](https://github.com/RichNasz/SwiftOpenResponsesDSL) and [SwiftChatCompletionsDSL](https://github.com/RichNasz/SwiftChatCompletionsDSL) for agent integration targets
+- Optional: [SwiftOpenResponsesDSL](https://github.com/RichNasz/SwiftOpenResponsesDSL) for the recommended [Open Responses API](https://www.openresponses.org/) integration, or [SwiftChatCompletionsDSL](https://github.com/RichNasz/SwiftChatCompletionsDSL) for legacy Chat Completions API projects
 
 ## Spec-Driven Development
 
