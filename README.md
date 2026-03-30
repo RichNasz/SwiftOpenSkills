@@ -2,7 +2,7 @@
 
 [![Swift 6.2](https://img.shields.io/badge/Swift-6.2-orange.svg)](https://swift.org)
 [![Platform](https://img.shields.io/badge/Platform-macOS%2013%20%7C%20iOS%2016-lightgrey.svg)](Package.swift)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Built with Claude Code](https://img.shields.io/badge/Built%20with-Claude%20Code-blueviolet?logo=claude)](https://claude.ai/code)
 
 A Swift Package Manager library providing first-class, native Swift support for the [open Agent Skills standard](https://agentskills.io) — the official skills integration companion to [SwiftOpenResponsesDSL](https://github.com/RichNasz/SwiftOpenResponsesDSL) and [SwiftChatCompletionsDSL](https://github.com/RichNasz/SwiftChatCompletionsDSL).
@@ -145,4 +145,4 @@ If you use an AI coding agent, consider writing WHAT and HOW specs before genera
 
 ## License
 
-SwiftOpenSkills is available under the Apache License 2.0. See [LICENSE](LICENSE) for details.
+SwiftOpenSkills is available under the MIT License. See [LICENSE](LICENSE) for details.

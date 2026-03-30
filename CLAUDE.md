@@ -36,8 +36,13 @@ Tests/
   SwiftOpenSkillsResponsesTests/ — Placeholder (integration tests)
   SwiftOpenSkillsChatTests/      — Placeholder (integration tests)
 
+Examples/
+  BasicUsage.swift               — Non-runnable code reference for all integration patterns
+  DiscoverSkills/                — `swift run discover-skills <dir>` — lists discovered skills
+  ShowCatalog/                   — `swift run show-catalog <dir>` — prints system prompt catalog
+  ActivateSkill/                 — `swift run activate-skill <dir> <slug>` — prints handler output
+
 Spec/SwiftOpenSkills.md          — Full specification
-Examples/BasicUsage.swift        — Usage examples for all integration patterns
 ```
 
 ### Design Patterns
@@ -58,6 +63,7 @@ Examples/BasicUsage.swift        — Usage examples for all integration patterns
 | [SwiftOpenResponsesDSL](https://github.com/RichNasz/SwiftOpenResponsesDSL) (`branch: "main"`) | Responses API agent integration | `SwiftOpenSkillsResponses` |
 | [SwiftChatCompletionsDSL](https://github.com/RichNasz/SwiftChatCompletionsDSL) (`branch: "main"`) | Chat Completions agent integration | `SwiftOpenSkillsChat` |
 | [SwiftLLMToolMacros](https://github.com/RichNasz/SwiftLLMToolMacros) (`branch: "main"`) | `ToolDefinition` and `JSONSchemaValue` types | Integration targets |
+| [swift-argument-parser](https://github.com/apple/swift-argument-parser) (`from: "1.5.0"`) | CLI argument parsing | Example executables |
 
 ### Build & Test
 

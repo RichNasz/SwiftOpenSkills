@@ -347,6 +347,105 @@ let skill = try await store.requireSkill(slug: "git-commit")
 let systemPrompt = "You are a commit expert.\n\n" + skill.instructions
 ```
 
+## Examples
+
+Three runnable command-line examples are included under `Examples/`. Each example lives in its own directory, is split into a library target (core logic) and an executable target (CLI entry point), and uses `swift-argument-parser` for argument parsing. All examples operate against a real skills directory on the filesystem.
+
+```
+Examples/
+  BasicUsage.swift               ← non-runnable code reference
+  DiscoverSkills/
+    Sources/DiscoverSkills.swift
+    CLI/DiscoverSkillsCLI.swift
+  ShowCatalog/
+    Sources/ShowCatalog.swift
+    CLI/ShowCatalogCLI.swift
+  ActivateSkill/
+    Sources/ActivateSkill.swift
+    CLI/ActivateSkillCLI.swift
+```
+
+### `discover-skills`
+
+Scans a directory for Agent Skills and prints a summary of each discovered skill (slug, name, description, and optional version and tags). Parse failures are reported after the skill list.
+
+**Command:**
+
+```bash
+swift run discover-skills <directory>
+```
+
+**Arguments:**
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `directory` | String (path) | Yes | Path to the directory containing skill subdirectories to scan. |
+
+**Output:**
+
+```
+Found 3 skill(s):
+
+  git-commit — Git Commit
+  Description: Writes conventional commit messages by analyzing staged diffs.
+  Version: 1.0.0  Tags: git, commit
+
+  ...
+
+1 failure(s):
+  invalid-yaml: invalidYAML(...)
+```
+
+### `show-catalog`
+
+Loads skills from a directory and prints the full `systemPromptSection()` output — exactly what would be prepended to an LLM system prompt to inform the model of available skills and how to activate them.
+
+**Command:**
+
+```bash
+swift run show-catalog <directory>
+```
+
+**Arguments:**
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `directory` | String (path) | Yes | Path to the directory containing skill subdirectories to scan. |
+
+**Output:**
+
+The complete Markdown block produced by `SkillCatalog.systemPromptSection()`, including the available skill listing and `activate_skill` usage guidance.
+
+### `activate-skill`
+
+Loads skills from a directory and activates one by slug, printing the formatted output that the LLM would receive in response to an `activate_skill` tool call.
+
+**Command:**
+
+```bash
+swift run activate-skill <directory> <slug>
+```
+
+**Arguments:**
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `directory` | String (path) | Yes | Path to the directory containing skill subdirectories to scan. |
+| `slug` | String | Yes | The skill slug (directory name) to activate. |
+
+**Output:**
+
+```
+[Skill Activated: git-commit]
+
+# Git Commit
+
+{full instruction body}
+
+---
+Resources: checklist.md   ← only if resources/ directory exists
+```
+
 ## Acceptance Criteria
 
 - [x] `SkillStore.load()` scans standard filesystem locations and returns a `DiscoveryResult`.
@@ -363,6 +462,9 @@ let systemPrompt = "You are a commit expert.\n\n" + skill.instructions
 - [x] `@SkillsToolBuilder` accepts both `AgentTool` and `Skills` expressions.
 - [x] All three targets build cleanly under Swift 6 strict concurrency.
 - [x] 36 unit tests pass covering parser, discovery, store, handler, catalog, and resources.
+- [x] `discover-skills` builds and prints discovered skills with slug, name, description, version, and tags.
+- [x] `show-catalog` builds and prints the full `systemPromptSection()` output for a given directory.
+- [x] `activate-skill` builds and prints the formatted handler output for a given directory and slug.
 
 ## Dependencies
 
@@ -372,3 +474,4 @@ let systemPrompt = "You are a commit expert.\n\n" + skill.instructions
 | [SwiftOpenResponsesDSL](https://github.com/RichNasz/SwiftOpenResponsesDSL) | Responses API agent integration | `SwiftOpenSkillsResponses` |
 | [SwiftChatCompletionsDSL](https://github.com/RichNasz/SwiftChatCompletionsDSL) | Chat Completions agent integration | `SwiftOpenSkillsChat` |
 | [SwiftLLMToolMacros](https://github.com/RichNasz/SwiftLLMToolMacros) | `ToolDefinition` and `JSONSchemaValue` types | Integration targets |
+| [swift-argument-parser](https://github.com/apple/swift-argument-parser) | CLI argument parsing | Example executables |
