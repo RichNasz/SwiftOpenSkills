@@ -1,54 +1,55 @@
-# activate-skill Example Specification
+# activate-skill — WHAT Spec
 
-## Purpose
+## Goal
 
-Load skills from a directory and activate one by slug, printing the formatted output the LLM would receive in response to an `activate_skill` tool call — so developers can verify skill content and resource listings before deploying.
-
----
-
-## Input
-
-| Argument    | Type   | Required | Description |
-|-------------|--------|----------|-------------|
-| `directory` | String | Yes      | Filesystem path to a directory containing skill subdirectories. |
-| `slug`      | String | Yes      | The skill slug (lowercased directory name) to activate. |
+Show a developer exactly what an LLM receives when it activates a skill — the full instruction body, the activation header, and any resource file listing — so they can verify skill content before it reaches the model.
 
 ---
 
-## Tasks
+## Who uses this
 
-1. Convert the `directory` string argument to a `URL` with a directory hint.
-2. Create a `SkillStore` and load skills using only the provided directory as the search path.
-3. Construct the JSON arguments string `{"name":"<slug>"}` expected by the handler.
-4. Call `SkillStore.activateSkillHandler(argumentsJSON:)` with the constructed JSON.
-5. Return the formatted handler output string.
+A developer who has written a skill and wants to inspect the handler output for that skill without standing up an LLM or making API calls. They need to see what the model will be given when it calls `activate_skill`.
+
+---
+
+## Invocation
+
+```
+swift run activate-skill <directory> <slug>
+```
+
+| Argument    | Description |
+|-------------|-------------|
+| `directory` | Path to any directory containing skill subdirectories. |
+| `slug`      | The slug of the skill to activate (the directory name, lowercased). |
 
 ---
 
 ## Output
 
-Printed to stdout: the exact string produced by `SkillStore.activateSkillHandler`, which includes:
+The complete, unmodified text of the `activate_skill` handler response for the named skill, which includes:
 
-- An activation header: `[Skill Activated: <slug>]`
-- The skill's display name as a Markdown heading
+- An activation header identifying the skill
+- The skill's display name as a heading
 - The full instruction body
-- A `Resources:` line listing filenames if a `resources/` subdirectory exists
+- A resource file listing, if the skill has a `resources/` subdirectory
+
+Nothing is added, wrapped, or reformatted — the output is exactly what the LLM would receive.
 
 ---
 
-## Constraints
+## Error behavior
 
-- Must use `.directory(url)` as the sole search path — never `.standard`.
-- Must not hand-construct the handler output — `activateSkillHandler` is the authoritative source of the formatted response.
-- If the slug is not found, `activateSkillHandler` throws `SkillError.skillNotFound`; this propagates naturally to the CLI and prints an error message.
-- The JSON arguments string must match the exact format expected by the handler: `{"name":"<slug>"}`.
+- A slug that does not match any loaded skill exits with a clear error message naming the unknown slug.
+- A path that does not exist or cannot be read causes the command to exit with an error message.
+- Only the specified directory is scanned — no standard locations are included.
 
 ---
 
-## Success Criteria
+## Success criteria
 
-- [ ] Output matches `activateSkillHandler` output exactly for a valid slug.
-- [ ] The header line `[Skill Activated: <slug>]` is present.
-- [ ] A skill with a `resources/` directory includes a `Resources:` line with filenames.
-- [ ] An unknown slug exits with a non-zero status and a meaningful error message from `ArgumentParser`.
-- [ ] Running against the Fixtures directory with `valid-skill` produces the expected instruction body.
+- [ ] Output exactly matches the `activateSkillHandler` response — character for character.
+- [ ] A skill with a `resources/` directory includes a resource file listing in the output.
+- [ ] An unknown slug exits with a non-zero status and a meaningful error message.
+- [ ] Running against the test fixtures with `valid-skill` produces the expected instruction body.
+- [ ] Running against the test fixtures with `with-resources` produces output that includes a `Resources:` line.

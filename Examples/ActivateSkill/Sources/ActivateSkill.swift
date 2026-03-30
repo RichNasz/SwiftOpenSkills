@@ -14,7 +14,6 @@ public struct ActivateSkill: Sendable {
     public func run(slug: String) async throws -> String {
         let store = SkillStore()
         try await store.load(.directory(directory))
-        let json = "{\"name\":\"\(slug)\"}"
-        return try await store.activateSkillHandler(argumentsJSON: json)
+        return try await store.activateSkillHandler(argumentsJSON: "{\"name\":\"\(slug)\"}")
     }
 }

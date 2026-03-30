@@ -19,9 +19,12 @@ struct DiscoverSkillsCLI: AsyncParsableCommand {
         let url = URL(filePath: directory, directoryHint: .isDirectory)
         let result = try await DiscoverSkills(directory: url).run()
 
-        if result.skills.isEmpty {
-            print("No skills found in \(directory)")
-        } else {
+        if result.skills.isEmpty && result.failures.isEmpty {
+            print("No skills or failures found in \(directory)")
+            return
+        }
+
+        if !result.skills.isEmpty {
             print("Found \(result.skills.count) skill(s):\n")
             for skill in result.skills {
                 print("  \(skill.id) — \(skill.name)")

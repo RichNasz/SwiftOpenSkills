@@ -1,52 +1,44 @@
-# discover-skills CodeGen Overview
+# discover-skills — HOW Spec
 
-## Source specs
+## Source spec
 
-- `Examples/DiscoverSkills/specs/SPEC.md` — example behavior
-
----
-
-## Generated files
-
-| File                                        | Purpose                         |
-|---------------------------------------------|---------------------------------|
-| `Examples/DiscoverSkills/Sources/DiscoverSkills.swift` | Core logic struct    |
-| `Examples/DiscoverSkills/CLI/DiscoverSkillsCLI.swift`  | CLI entry point      |
+`Examples/DiscoverSkills/specs/SPEC.md`
 
 ---
 
-## Core struct
+## Files to generate
 
-`public struct DiscoverSkills` — `Sendable`, no actor needed (all state is in `SkillStore`).
+| File | Purpose |
+|------|---------|
+| `Examples/DiscoverSkills/Sources/DiscoverSkills.swift` | Core logic — discovery and result production |
+| `Examples/DiscoverSkills/CLI/DiscoverSkillsCLI.swift` | CLI entry point — argument parsing and output formatting |
 
-Stored properties:
-- `directory: URL` — set at init, passed directly to `SkillStore.load`
-
-The struct exists solely to separate testable core logic from CLI argument parsing.
-
----
-
-## Init rules
-
-1. Accept a `URL` (not a `String`) — path-to-URL conversion is the CLI's responsibility.
-2. Store it as `directory`.
+All generated files must open with a comment crediting this spec and noting they should not be edited manually.
 
 ---
 
-## run() rules
+## Core type
 
-1. Create a fresh `SkillStore`.
-2. Call `load` with `.directory(directory)` as the sole search path and capture the returned `DiscoveryResult`.
-3. Return the `DiscoveryResult` to the caller — formatting is the CLI's responsibility.
+A public, `Sendable` struct that holds a directory `URL` and exposes a single async throwing method that runs the discovery and returns a `DiscoveryResult`. The struct has no knowledge of the CLI or of output formatting.
+
+The directory `URL` is accepted directly — path-string-to-URL conversion is the CLI's responsibility, keeping this type usable in non-CLI contexts.
 
 ---
 
-## CLI rules
+## Discovery logic
 
-1. Conform to `AsyncParsableCommand`; set `commandName` to `"discover-skills"`.
-2. Declare one `@Argument` for the directory path as a `String`.
-3. In `run()`, convert the string argument to a `URL` using `URL(filePath:directoryHint:)`.
-4. Instantiate `DiscoverSkills`, call `run()`, and receive the `DiscoveryResult`.
-5. Print a header line with the skill count. For each skill, print slug, name, description, and conditional version and tags lines.
-6. After the skill block, print failures with the directory name and error.
-7. If both collections are empty, print a single informative message.
+Use `SkillStore` to load skills from the held directory using `.directory` as the sole search path. The async load call returns a `DiscoveryResult` containing both the successfully parsed skills and any non-fatal failures. Return the full result — the CLI decides what to display.
+
+---
+
+## CLI
+
+Conform to `AsyncParsableCommand` from `ArgumentParser`. The command accepts a single positional string argument for the directory path and is responsible for converting it to a `URL` before passing it to the core struct.
+
+After receiving the `DiscoveryResult`, format output as follows:
+
+- If skills were found: open with a count line, then print each skill as a self-contained block with slug, name, description, and conditional version and tags lines. Skills should be presented in the order returned by the store (already sorted by slug).
+- If failures occurred: print them in a clearly separated section, identifying each failed directory by name and showing the error description.
+- If both collections are empty: print a single informative line rather than silence.
+
+Use blank lines between skill blocks for readability. Keep the failures section visually distinct from the skills section.

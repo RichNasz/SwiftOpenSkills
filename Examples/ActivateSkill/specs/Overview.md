@@ -1,51 +1,40 @@
-# activate-skill CodeGen Overview
+# activate-skill — HOW Spec
 
-## Source specs
+## Source spec
 
-- `Examples/ActivateSkill/specs/SPEC.md` — example behavior
-
----
-
-## Generated files
-
-| File                                           | Purpose                         |
-|------------------------------------------------|---------------------------------|
-| `Examples/ActivateSkill/Sources/ActivateSkill.swift` | Core logic struct         |
-| `Examples/ActivateSkill/CLI/ActivateSkillCLI.swift`  | CLI entry point           |
+`Examples/ActivateSkill/specs/SPEC.md`
 
 ---
 
-## Core struct
+## Files to generate
 
-`public struct ActivateSkill` — `Sendable`, no actor needed.
+| File | Purpose |
+|------|---------|
+| `Examples/ActivateSkill/Sources/ActivateSkill.swift` | Core logic — loading and handler invocation |
+| `Examples/ActivateSkill/CLI/ActivateSkillCLI.swift` | CLI entry point — argument parsing and output |
 
-Stored properties:
-- `directory: URL` — set at init, passed to `SkillStore.load`
-
-The slug is not stored on the struct — it is passed per-call to `run(slug:)`.
-
----
-
-## Init rules
-
-1. Accept a `URL` — path-to-URL conversion is the CLI's responsibility.
-2. Store it as `directory`.
+All generated files must open with a comment crediting this spec and noting they should not be edited manually.
 
 ---
 
-## run(slug:) rules
+## Core type
 
-1. Create a fresh `SkillStore`.
-2. Call `load` with `.directory(directory)`.
-3. Build the handler JSON argument string with the slug interpolated into `{"name":"<slug>"}`.
-4. Call `activateSkillHandler(argumentsJSON:)` on the store and return the result.
-5. Do not catch errors — let them propagate to `ArgumentParser` for user-facing error output.
+A public, `Sendable` struct that holds a directory `URL` and exposes a single async throwing method that accepts a slug string and returns the handler output string. The struct has no knowledge of the CLI or of printing.
+
+The directory `URL` is accepted directly — path-string-to-URL conversion is the CLI's responsibility. The slug is a per-call parameter rather than a stored property, since the struct could reasonably be used to activate multiple skills against the same directory.
 
 ---
 
-## CLI rules
+## Activation logic
 
-1. Conform to `AsyncParsableCommand`; set `commandName` to `"activate-skill"`.
-2. Declare two `@Argument` properties: `directory` (path string) and `slug` (skill slug string), in that order.
-3. In `run()`, convert the directory string to a `URL` and instantiate `ActivateSkill`.
-4. Call `run(slug:)` with the slug argument and print the returned string directly.
+Use `SkillStore` to load skills from the held directory using `.directory` as the sole search path. Then invoke the store's `activateSkillHandler`, passing the slug in the JSON argument format the handler expects. Return the handler's output string without modification.
+
+Do not catch errors — let them propagate. If the slug is not found, the handler throws a typed `SkillError`; the CLI layer and `ArgumentParser` will surface this as a user-facing error message.
+
+---
+
+## CLI
+
+Conform to `AsyncParsableCommand` from `ArgumentParser`. The command accepts two positional string arguments in order: the directory path, then the skill slug. Convert the directory path to a `URL`, instantiate the core struct, and call its method with the slug. Print the returned string directly with no additional formatting.
+
+Errors thrown by the core method — including unknown slugs — propagate naturally through `AsyncParsableCommand` and are formatted as error output by `ArgumentParser`.

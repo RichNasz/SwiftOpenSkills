@@ -1,48 +1,36 @@
-# show-catalog CodeGen Overview
+# show-catalog — HOW Spec
 
-## Source specs
+## Source spec
 
-- `Examples/ShowCatalog/specs/SPEC.md` — example behavior
-
----
-
-## Generated files
-
-| File                                       | Purpose                         |
-|--------------------------------------------|---------------------------------|
-| `Examples/ShowCatalog/Sources/ShowCatalog.swift` | Core logic struct         |
-| `Examples/ShowCatalog/CLI/ShowCatalogCLI.swift`  | CLI entry point           |
+`Examples/ShowCatalog/specs/SPEC.md`
 
 ---
 
-## Core struct
+## Files to generate
 
-`public struct ShowCatalog` — `Sendable`, no actor needed.
+| File | Purpose |
+|------|---------|
+| `Examples/ShowCatalog/Sources/ShowCatalog.swift` | Core logic — loading and catalog production |
+| `Examples/ShowCatalog/CLI/ShowCatalogCLI.swift` | CLI entry point — argument parsing and output |
 
-Stored properties:
-- `directory: URL` — set at init, passed to `SkillStore.load`
-
----
-
-## Init rules
-
-1. Accept a `URL` — path-to-URL conversion is the CLI's responsibility.
-2. Store it as `directory`.
+All generated files must open with a comment crediting this spec and noting they should not be edited manually.
 
 ---
 
-## run() rules
+## Core type
 
-1. Create a fresh `SkillStore`.
-2. Call `load` with `.directory(directory)` and discard the returned `DiscoveryResult` (failures are not surfaced by this example).
-3. Call `catalog()` on the store to obtain a `SkillCatalog`.
-4. Return `catalog.systemPromptSection()` as a `String`.
+A public, `Sendable` struct that holds a directory `URL` and exposes a single async throwing method that returns the catalog section string. The struct has no knowledge of the CLI or of printing.
+
+The directory `URL` is accepted directly — path-string-to-URL conversion is the CLI's responsibility.
 
 ---
 
-## CLI rules
+## Catalog logic
 
-1. Conform to `AsyncParsableCommand`; set `commandName` to `"show-catalog"`.
-2. Declare one `@Argument` for the directory path as a `String`.
-3. In `run()`, convert the string to a `URL` and instantiate `ShowCatalog`.
-4. Call `run()` and print the returned string directly — no additional formatting.
+Use `SkillStore` to load skills from the held directory using `.directory` as the sole search path. Discovery failures are not surfaced — the purpose of this example is catalog output, not discovery diagnostics. After loading, retrieve the `SkillCatalog` from the store and return the result of `systemPromptSection()`. The returned string is the complete, unmodified catalog text.
+
+---
+
+## CLI
+
+Conform to `AsyncParsableCommand` from `ArgumentParser`. The command accepts a single positional string argument for the directory path, converts it to a `URL`, instantiates the core struct, and calls its method. Print the returned string directly with no additional formatting, headers, or trailing newlines beyond what the catalog text itself contains.
