@@ -132,6 +132,58 @@ SkillDiscovery(.standard, .directory(fallbackURL))
 | 4 | `~/agent-skills/` |
 | 5 | `/usr/local/share/agent-skills/` (macOS/Linux) |
 
+## Runnable Examples
+
+Five command-line examples are included under `Examples/`. Each is a self-contained executable you can run with `swift run`. Examples 1–3 work entirely against the local filesystem. Examples 4–5 make live calls to an LLM endpoint.
+
+### `discover-skills` — Audit a skills directory
+
+Scans a directory and prints a summary of every discovered skill (slug, name, description, version, tags) plus a report of any parse failures. Use this to verify a `skills/` directory before wiring it into your application.
+
+```bash
+swift run discover-skills path/to/skills/
+```
+
+### `show-catalog` — Preview the system prompt section
+
+Loads skills from a directory and prints the exact Markdown text that SwiftOpenSkills would inject into an LLM system prompt — the catalog listing plus `activate_skill` usage guidance. Use this to confirm the model will see what you expect.
+
+```bash
+swift run show-catalog path/to/skills/
+```
+
+### `activate-skill` — Inspect handler output for a single skill
+
+Loads skills from a directory, activates one by slug, and prints the formatted response the LLM would receive — activation header, display name, full instruction body, and resource listing if present. Use this to verify skill content before a live call.
+
+```bash
+swift run activate-skill path/to/skills/ git-commit
+```
+
+### `run-agent` — Live agent call (Open Responses API) *(recommended)*
+
+Sends a prompt to an [Open Responses API](https://www.openresponses.org/) endpoint with a skills directory pre-loaded. The model can call `activate_skill` automatically during its response. Uses `SwiftOpenSkillsResponses`.
+
+```bash
+swift run run-agent "Help me write a conventional commit message." \
+    --server-url http://127.0.0.1:1234/v1/responses \
+    --model llama3 \
+    --skills-dir path/to/skills/
+```
+
+If `--skills-dir` is omitted, standard platform locations are scanned automatically. `--api-key` is optional for local or unauthenticated endpoints.
+
+### `run-agent-chat` — Live agent call (Chat Completions API)
+
+The companion to `run-agent` for providers that expose a Chat Completions endpoint. Same arguments and behavior; the difference is the API standard used under the hood. Uses `SwiftOpenSkillsChat`.
+
+```bash
+swift run run-agent-chat "Help me write a conventional commit message." \
+    --server-url http://127.0.0.1:1234/v1/chat/completions \
+    --model llama3 \
+    --skills-dir path/to/skills/
+```
+
 ## Requirements
 
 - Swift 6.2+

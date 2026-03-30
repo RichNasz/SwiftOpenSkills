@@ -41,6 +41,8 @@ Examples/
   DiscoverSkills/                — `swift run discover-skills <dir>` — lists discovered skills
   ShowCatalog/                   — `swift run show-catalog <dir>` — prints system prompt catalog
   ActivateSkill/                 — `swift run activate-skill <dir> <slug>` — prints handler output
+  RunAgent/                      — `swift run run-agent <prompt> --server-url <url> --model <id>` — live LLM call (Responses DSL)
+  RunAgentChat/                  — `swift run run-agent-chat <prompt> --server-url <url> --model <id>` — live LLM call (Chat DSL)
 
 Spec/SwiftOpenSkills.md          — Full specification
 ```

@@ -82,6 +82,32 @@ let package = Package(
             ],
             path: "Examples/ActivateSkill/CLI"
         ),
+        .target(
+            name: "RunAgentExample",
+            dependencies: ["SwiftOpenSkillsResponses"],
+            path: "Examples/RunAgent/Sources"
+        ),
+        .executableTarget(
+            name: "run-agent",
+            dependencies: [
+                "RunAgentExample",
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+            ],
+            path: "Examples/RunAgent/CLI"
+        ),
+        .target(
+            name: "RunAgentChatExample",
+            dependencies: ["SwiftOpenSkillsChat"],
+            path: "Examples/RunAgentChat/Sources"
+        ),
+        .executableTarget(
+            name: "run-agent-chat",
+            dependencies: [
+                "RunAgentChatExample",
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+            ],
+            path: "Examples/RunAgentChat/CLI"
+        ),
 
         // MARK: - Tests
         .testTarget(

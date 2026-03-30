@@ -349,7 +349,7 @@ let systemPrompt = "You are a commit expert.\n\n" + skill.instructions
 
 ## Examples
 
-Three runnable command-line examples are included under `Examples/`. Each example lives in its own directory, is split into a library target (core logic) and an executable target (CLI entry point), and uses `swift-argument-parser` for argument parsing. All examples operate against a real skills directory on the filesystem.
+Five runnable command-line examples are included under `Examples/`. Each example lives in its own directory, is split into a library target (core logic) and an executable target (CLI entry point), and uses `swift-argument-parser` for argument parsing. Examples 1–3 operate against a local skills directory. Examples 4–5 make live calls to an LLM endpoint.
 
 ```
 Examples/
@@ -363,6 +363,12 @@ Examples/
   ActivateSkill/
     Sources/ActivateSkill.swift
     CLI/ActivateSkillCLI.swift
+  RunAgent/
+    Sources/RunAgent.swift
+    CLI/RunAgentCLI.swift
+  RunAgentChat/
+    Sources/RunAgentChat.swift
+    CLI/RunAgentChatCLI.swift
 ```
 
 ### `discover-skills`
@@ -446,6 +452,48 @@ swift run activate-skill <directory> <slug>
 Resources: checklist.md   ← only if resources/ directory exists
 ```
 
+### `run-agent`
+
+Sends a single user prompt to an Open Responses API endpoint with a `SkillStore` pre-loaded. The LLM may call `activate_skill` automatically during the response. Uses `SwiftOpenSkillsResponses`.
+
+**Command:**
+
+```bash
+swift run run-agent <prompt> --server-url <url> --model <id> [--skills-dir <path>] [--api-key <key>]
+```
+
+**Arguments:**
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `prompt` | String (positional) | Yes | The message to send to the agent. |
+| `--server-url` | String | Yes | Full URL of an Open Responses API endpoint. |
+| `--model` | String | Yes | Model identifier (e.g. `gpt-4o`, `llama3`). |
+| `--skills-dir` | String | No | Path to a skills directory. If omitted, standard locations are scanned. |
+| `--api-key` | String | No | API key for authentication. Omit for local endpoints. |
+
+**Output:**
+
+The agent's reply string, printed to stdout.
+
+### `run-agent-chat`
+
+Companion to `run-agent` using `SwiftOpenSkillsChat` and a Chat Completions endpoint. Same behavior and arguments; endpoint URL points to a Chat Completions API.
+
+**Command:**
+
+```bash
+swift run run-agent-chat <prompt> --server-url <url> --model <id> [--skills-dir <path>] [--api-key <key>]
+```
+
+**Arguments:**
+
+Same as `run-agent`.
+
+**Output:**
+
+The agent's reply string, printed to stdout.
+
 ## Acceptance Criteria
 
 - [x] `SkillStore.load()` scans standard filesystem locations and returns a `DiscoveryResult`.
@@ -465,6 +513,8 @@ Resources: checklist.md   ← only if resources/ directory exists
 - [x] `discover-skills` builds and prints discovered skills with slug, name, description, version, and tags.
 - [x] `show-catalog` builds and prints the full `systemPromptSection()` output for a given directory.
 - [x] `activate-skill` builds and prints the formatted handler output for a given directory and slug.
+- [x] `run-agent` builds and sends a prompt to an Open Responses API endpoint using `SwiftOpenSkillsResponses`.
+- [x] `run-agent-chat` builds and sends a prompt to a Chat Completions API endpoint using `SwiftOpenSkillsChat`.
 
 ## Dependencies
 
