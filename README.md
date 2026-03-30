@@ -76,21 +76,21 @@ let agent = try await SkillsAgent(client: client, model: "gpt-4o") {
 let response = try await agent.send("Commit my staged changes.")
 ```
 
-### Manual Integration (Chat DSL)
+### Manual Integration (Responses DSL)
 
 ```swift
-import SwiftOpenSkillsChat
+import SwiftOpenSkillsResponses
 
 let store = SkillStore()
 try await store.load(.directory(myURL))
 
-let skillTool = await store.chatAgentTool()
+let skillTool = await store.responsesAgentTool()
 let catalogSection = await store.catalog().systemPromptSection()
 
 let agent = try Agent(
     client: client,
     model: "gpt-4o",
-    systemPrompt: "You are a coding assistant.\n\n" + catalogSection
+    instructions: "You are a coding assistant.\n\n" + catalogSection
 ) {
     skillTool
     AgentTool(tool: myOtherTool) { args in ... }
