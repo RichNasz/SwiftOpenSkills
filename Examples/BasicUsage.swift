@@ -1,6 +1,14 @@
 // BasicUsage.swift — SwiftOpenSkills usage examples
 // These snippets illustrate the main integration patterns.
 // They are not runnable as-is; substitute your actual client and model.
+//
+// Package trait requirements:
+//   import SwiftOpenSkills            — always available (no trait needed)
+//   import SwiftOpenSkillsResponses   — requires traits: ["responses"]
+//   import SwiftOpenSkillsChat        — requires traits: ["chat"]
+//
+// Both traits are enabled by default; specify only what your consumer target needs:
+//   .package(url: "…/SwiftOpenSkills.git", branch: "main", traits: ["responses"])
 
 import Foundation
 import SwiftOpenSkills

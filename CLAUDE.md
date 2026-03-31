@@ -18,14 +18,14 @@ Sources/
     SkillCatalog.swift           — System prompt catalog generation
     SkillStore.swift             — Primary actor entry point
 
-  SwiftOpenSkillsResponses/      ← Responses DSL integration
+  SwiftOpenSkillsResponses/      ← Responses DSL integration (`responses` trait)
     SkillStore+Responses.swift   — responsesAgentTool(strict:) extension
     Skills.swift                 — Skills struct (wraps SkillStore, provides AgentTool)
     Agent+Skills.swift           — Agent.withSkills static factory
     SkillsToolBuilder.swift      — @resultBuilder accepting AgentTool + Skills
     SkillsAgent.swift            — Actor wrapper around Agent
 
-  SwiftOpenSkillsChat/           ← Chat DSL integration
+  SwiftOpenSkillsChat/           ← Chat DSL integration (`chat` trait)
     SkillStore+Chat.swift        — chatAgentTool() extension
     Skills+Chat.swift            — Skills struct + Agent.withSkills for Chat DSL
     SkillsAgent+Chat.swift       — Actor wrapper; uses streamSend not stream
@@ -50,7 +50,8 @@ Spec/SwiftOpenSkills.md          — Full specification
 ### Design Patterns
 
 - **Actor-safe, async-first**: `SkillStore` and `SkillDiscovery` are Swift actors. All mutating operations and filesystem I/O are async.
-- **Slug = directory name**: `Skill.id` is the lowercased directory name, not the YAML `name` field. This is the stable identifier used everywhere.
+- **Slug = name = id**: `Skill.id` is the lowercased directory name. The YAML `name` field must equal the slug per the agentskills.io spec (slug-format, max 64 chars, lowercase alphanumeric + hyphens).
+- **Traits-gated integrations**: `SwiftOpenSkillsResponses` and `SwiftOpenSkillsChat` are gated by the `responses` and `chat` SE-0450 traits respectively. Both are enabled by default in the package manifest so `swift build` and `swift test` work without flags. External consumers opt in by specifying `traits:` in their package dependency declaration.
 - **Non-fatal discovery**: Parse failures are collected into `DiscoveryResult.failures` and do not abort the scan. The caller decides how to handle them.
 - **First-occurrence wins**: When scanning multiple `SkillSearchPath` values in order, the first directory that provides a given slug takes priority.
 - **No Yams in public API**: `SkillParser` is internal. `Yams.load(yaml:) -> [String: Any]` is used (not Codable) to avoid leaking Yams types into the public surface.
@@ -59,13 +60,13 @@ Spec/SwiftOpenSkills.md          — Full specification
 
 ### Dependencies
 
-| Dependency | Role | Targets |
+| Dependency | Role | Trait |
 |---|---|---|
-| [Yams](https://github.com/jpsim/Yams.git) (`from: "5.1.0"`) | YAML frontmatter parsing | `SwiftOpenSkills` |
-| [SwiftOpenResponsesDSL](https://github.com/RichNasz/SwiftOpenResponsesDSL) (`branch: "main"`) | [Open Responses API](https://www.openresponses.org/) agent integration *(recommended)* | `SwiftOpenSkillsResponses` |
-| [SwiftChatCompletionsDSL](https://github.com/RichNasz/SwiftChatCompletionsDSL) (`branch: "main"`) | Legacy Chat Completions API agent integration | `SwiftOpenSkillsChat` |
-| [SwiftLLMToolMacros](https://github.com/RichNasz/SwiftLLMToolMacros) (`branch: "main"`) | `ToolDefinition` and `JSONSchemaValue` types | Integration targets |
-| [swift-argument-parser](https://github.com/apple/swift-argument-parser) (`from: "1.5.0"`) | CLI argument parsing | Example executables |
+| [Yams](https://github.com/jpsim/Yams.git) (`from: "5.1.0"`) | YAML frontmatter parsing | always |
+| [SwiftOpenResponsesDSL](https://github.com/RichNasz/SwiftOpenResponsesDSL) (`branch: "main"`) | [Open Responses API](https://www.openresponses.org/) agent integration *(recommended)* | `responses` |
+| [SwiftChatCompletionsDSL](https://github.com/RichNasz/SwiftChatCompletionsDSL) (`branch: "main"`) | Legacy Chat Completions API agent integration | `chat` |
+| [SwiftLLMToolMacros](https://github.com/RichNasz/SwiftLLMToolMacros) (`branch: "main"`) | `ToolDefinition` and `JSONSchemaValue` types | `responses` or `chat` |
+| [swift-argument-parser](https://github.com/apple/swift-argument-parser) (`from: "1.5.0"`) | CLI argument parsing | always |
 
 ### Build & Test
 
@@ -74,7 +75,7 @@ swift build
 swift test
 ```
 
-All three targets must compile cleanly under Swift 6 strict concurrency. The core test suite has 36 tests covering parser, discovery, store, handler, catalog, and resources.
+All three targets must compile cleanly under Swift 6 strict concurrency. Both integration traits are enabled by default, so no additional flags are needed. The core test suite has 77 tests covering parser, discovery, store, handler, catalog, resources, aliases, catalog token estimation, variable substitution, and list-skills handler.
 
 ## Spec-Driven Development
 

@@ -21,21 +21,30 @@ Agent Skills are Markdown files with YAML frontmatter that live on the filesyste
 
 ### Installation
 
-SwiftOpenSkills ships as three library products. Add the package to your `Package.swift`:
+SwiftOpenSkills uses SE-0450 package traits to make DSL integrations opt-in. Add the package and specify which integrations you need:
+
+| Traits | What's enabled |
+|---|---|
+| *(default — both)* | Core + Responses + Chat |
+| `["responses"]` | Core + `SwiftOpenSkillsResponses` *(recommended)* |
+| `["chat"]` | Core + `SwiftOpenSkillsChat` *(legacy Chat Completions API)* |
+| `[]` | Core only — no DSL packages fetched |
 
 ```swift
+// Responses integration (recommended)
 dependencies: [
-    .package(url: "https://github.com/RichNasz/SwiftOpenSkills.git", branch: "main")
+    .package(url: "https://github.com/RichNasz/SwiftOpenSkills.git", branch: "main",
+        traits: ["responses"])
+]
+
+// Core only — no DSL dependency
+dependencies: [
+    .package(url: "https://github.com/RichNasz/SwiftOpenSkills.git", branch: "main",
+        traits: [])
 ]
 ```
 
-Then add the product you need to your target:
-
-| Product | Use when |
-|---|---|
-| `SwiftOpenSkills` | Core only — no DSL dependency |
-| `SwiftOpenSkillsResponses` | Integrating with `SwiftOpenResponsesDSL` *(recommended)* |
-| `SwiftOpenSkillsChat` | Integrating with `SwiftChatCompletionsDSL` *(legacy Chat Completions API)* |
+Then add the product to your target as usual:
 
 ```swift
 .target(
@@ -189,7 +198,8 @@ swift run run-agent-chat "Help me write a conventional commit message." \
 - Swift 6.2+
 - macOS 13.0+ / iOS 16.0+
 - Depends on [Yams](https://github.com/jpsim/Yams) 5.1+ for YAML frontmatter parsing (core target only)
-- Optional: [SwiftOpenResponsesDSL](https://github.com/RichNasz/SwiftOpenResponsesDSL) for the recommended [Open Responses API](https://www.openresponses.org/) integration, or [SwiftChatCompletionsDSL](https://github.com/RichNasz/SwiftChatCompletionsDSL) for legacy Chat Completions API projects
+- `responses` trait: [SwiftOpenResponsesDSL](https://github.com/RichNasz/SwiftOpenResponsesDSL) for the recommended [Open Responses API](https://www.openresponses.org/) integration
+- `chat` trait: [SwiftChatCompletionsDSL](https://github.com/RichNasz/SwiftChatCompletionsDSL) for legacy Chat Completions API projects
 
 ## Spec-Driven Development
 

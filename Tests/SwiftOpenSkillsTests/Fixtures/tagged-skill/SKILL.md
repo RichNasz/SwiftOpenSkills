@@ -1,5 +1,5 @@
 ---
-name: Tagged Skill
+name: tagged-skill
 description: A skill with a tags array.
 tags: [swift, llm, agent]
 ---

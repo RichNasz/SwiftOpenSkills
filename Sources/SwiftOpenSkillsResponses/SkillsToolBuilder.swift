@@ -1,3 +1,4 @@
+#if responses
 import Foundation
 import SwiftOpenSkills
 import SwiftOpenResponsesDSL
@@ -45,3 +46,4 @@ public struct SkillsToolBuilder {
         components.flatMap { $0 }
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if responses
 import Foundation
 import SwiftOpenSkills
 import SwiftOpenResponsesDSL
@@ -98,3 +99,4 @@ public actor SkillsAgent {
         await agent.reset()
     }
 }
+#endif

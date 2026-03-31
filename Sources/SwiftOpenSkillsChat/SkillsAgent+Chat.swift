@@ -1,3 +1,4 @@
+#if chat
 import Foundation
 import SwiftOpenSkills
 import SwiftChatCompletionsDSL
@@ -98,3 +99,4 @@ public actor SkillsAgent {
         await agent.reset()
     }
 }
+#endif

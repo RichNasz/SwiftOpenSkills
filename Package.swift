@@ -12,6 +12,21 @@ let package = Package(
         .library(name: "SwiftOpenSkillsResponses", targets: ["SwiftOpenSkillsResponses"]),
         .library(name: "SwiftOpenSkillsChat", targets: ["SwiftOpenSkillsChat"]),
     ],
+    traits: [
+        // Both integration traits are enabled by default so that `swift build` and
+        // `swift test` work without additional flags. Consumers who want core-only
+        // explicitly pass `traits: []`; consumers who want a single integration pass
+        // `traits: ["responses"]` or `traits: ["chat"]`.
+        .default(enabledTraits: ["responses", "chat"]),
+        .trait(
+            name: "responses",
+            description: "Enables SwiftOpenResponsesDSL integration (Open Responses API, recommended)"
+        ),
+        .trait(
+            name: "chat",
+            description: "Enables SwiftChatCompletionsDSL integration (Chat Completions API, legacy)"
+        ),
+    ],
     dependencies: [
         .package(url: "https://github.com/jpsim/Yams.git", from: "5.1.0"),
         .package(url: "https://github.com/RichNasz/SwiftOpenResponsesDSL", branch: "main"),

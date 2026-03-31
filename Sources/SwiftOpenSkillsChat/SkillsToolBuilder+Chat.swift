@@ -1,3 +1,4 @@
+#if chat
 import Foundation
 import SwiftOpenSkills
 import SwiftChatCompletionsDSL
@@ -41,3 +42,4 @@ public struct SkillsToolBuilder {
         components.flatMap { $0 }
     }
 }
+#endif

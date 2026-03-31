@@ -8,6 +8,30 @@ SwiftOpenSkills is a Swift Package Manager library that provides first-class, na
 
 The package handles discovery, parsing, catalog generation, and activation of Agent Skills so they can be used side-by-side with tools during LLM inference calls, following the progressive disclosure pattern defined by the Agent Skills standard.
 
+## Package Traits
+
+SwiftOpenSkills uses SE-0450 package traits to make DSL integrations opt-in. Both traits are enabled by default; specify only what you need.
+
+| Trait | Enables |
+|---|---|
+| *(none — `traits: []`)* | Core only — discovery, parsing, catalog, handler |
+| `responses` | `SwiftOpenSkillsResponses` product + `SwiftOpenResponsesDSL` |
+| `chat` | `SwiftOpenSkillsChat` product + `SwiftChatCompletionsDSL` |
+
+```swift
+// Core only — no DSL packages fetched
+.package(url: "https://github.com/RichNasz/SwiftOpenSkills.git", branch: "main", traits: [])
+
+// Responses integration (recommended) — fetches SwiftOpenResponsesDSL
+.package(url: "https://github.com/RichNasz/SwiftOpenSkills.git", branch: "main", traits: ["responses"])
+
+// Chat integration — fetches SwiftChatCompletionsDSL
+.package(url: "https://github.com/RichNasz/SwiftOpenSkills.git", branch: "main", traits: ["chat"])
+
+// Both integrations (default)
+.package(url: "https://github.com/RichNasz/SwiftOpenSkills.git", branch: "main")
+```
+
 ## Goals
 
 ### Goals
@@ -29,7 +53,7 @@ The package handles discovery, parsing, catalog generation, and activation of Ag
 
 ## SKILL.md Format
 
-Skills live in named subdirectories. The directory name (lowercased) is the stable **slug** used as the `activate_skill` argument. The YAML `name` field is the display name shown in the catalog.
+Skills live in named subdirectories. The directory name (lowercased) is the stable **slug** — it is used as the `activate_skill` argument and must exactly match the `name` field in the frontmatter.
 
 ```
 skills/
@@ -41,7 +65,7 @@ skills/
 
 ```markdown
 ---
-name: Git Commit
+name: git-commit
 description: Writes conventional commit messages by analyzing staged diffs.
 version: 1.0.0
 author: Jane Smith
@@ -55,7 +79,7 @@ You are an expert at writing conventional commit messages...
 
 | Field | Required | Type | Description |
 |---|---|---|---|
-| `name` | Yes | String | Human-readable display name shown in the skill catalog. |
+| `name` | Yes | String | Slug-format identifier matching the directory name (lowercase alphanumeric and hyphens, max 64 chars). Equals `Skill.id`. |
 | `description` | Yes | String | One-line description embedded in the catalog listing. |
 | `version` | No | String | Semantic version string. |
 | `author` | No | String | Author identifier. |
@@ -94,7 +118,7 @@ SkillDiscovery(.directory(projectURL), .directory(sharedURL))  // multiple custo
 
 ## Capabilities
 
-### 1. Core (`SwiftOpenSkills`)
+### 1. Core — always available (`SwiftOpenSkills`)
 
 Depends only on Yams. No DSL dependency.
 
@@ -162,7 +186,7 @@ Resources: checklist.md, examples.md   ← only if resources/ exists
 ```swift
 public struct SkillCatalog: Sendable {
     public let skills: [Skill]
-    public var compactListing: String        // "- slug: Name — description" per line
+    public var compactListing: String        // "- slug: description" per line
     public var entries: [CatalogEntry]       // Encodable structs
     public func systemPromptSection() -> String
 }
@@ -186,9 +210,9 @@ public struct DiscoveryResult: Sendable {
 }
 ```
 
-### 2. Responses Integration (`SwiftOpenSkillsResponses`)
+### 2. Responses Integration — `responses` trait (`SwiftOpenSkillsResponses`)
 
-Depends on `SwiftOpenSkills` + `SwiftOpenResponsesDSL`.
+Depends on `SwiftOpenSkills` + `SwiftOpenResponsesDSL`. Requires the `responses` trait.
 
 #### `SkillStore.responsesAgentTool(strict:)`
 
@@ -246,9 +270,9 @@ let agent = try await SkillsAgent(client: client, model: "gpt-4o") {
 }
 ```
 
-### 3. Chat Integration (`SwiftOpenSkillsChat`)
+### 3. Chat Integration — `chat` trait (`SwiftOpenSkillsChat`)
 
-Depends on `SwiftOpenSkills` + `SwiftChatCompletionsDSL`. Mirrors the Responses integration.
+Depends on `SwiftOpenSkills` + `SwiftChatCompletionsDSL`. Requires the `chat` trait. Mirrors the Responses integration.
 
 #### `SkillStore.chatAgentTool()`
 
@@ -503,12 +527,12 @@ The agent's reply string, printed to stdout.
 - [x] `SkillParser` handles CRLF line endings, missing frontmatter, invalid YAML, missing required keys, and empty instruction bodies with typed `SkillError` cases.
 - [x] `activate_skill` tool handler parses `{"name": "<slug>"}` and returns formatted instructions.
 - [x] Resource files in `resources/` are listed in the handler response when present.
-- [x] `SkillCatalog.compactListing` uses the `- slug: Name — description` format.
+- [x] `SkillCatalog.compactListing` uses the `- slug: description` format.
 - [x] `SkillCatalog.systemPromptSection()` includes `activate_skill` usage guidance.
 - [x] `Agent.withSkills` creates a correctly configured agent for both DSLs.
 - [x] `SkillsAgent` resolves `Skills` instances asynchronously and forwards all agent methods.
 - [x] `@SkillsToolBuilder` accepts both `AgentTool` and `Skills` expressions.
-- [x] All three targets build cleanly under Swift 6 strict concurrency.
+- [x] Core target builds cleanly with no traits enabled; integration targets build when their respective trait is active.
 - [x] 36 unit tests pass covering parser, discovery, store, handler, catalog, and resources.
 - [x] `discover-skills` builds and prints discovered skills with slug, name, description, version, and tags.
 - [x] `show-catalog` builds and prints the full `systemPromptSection()` output for a given directory.
@@ -518,10 +542,10 @@ The agent's reply string, printed to stdout.
 
 ## Dependencies
 
-| Dependency | Role | Targets |
+| Dependency | Role | Trait |
 |---|---|---|
-| [Yams](https://github.com/jpsim/Yams) | YAML frontmatter parsing | `SwiftOpenSkills` |
-| [SwiftOpenResponsesDSL](https://github.com/RichNasz/SwiftOpenResponsesDSL) | [Open Responses API](https://www.openresponses.org/) agent integration *(recommended)* | `SwiftOpenSkillsResponses` |
-| [SwiftChatCompletionsDSL](https://github.com/RichNasz/SwiftChatCompletionsDSL) | Legacy Chat Completions API agent integration | `SwiftOpenSkillsChat` |
-| [SwiftLLMToolMacros](https://github.com/RichNasz/SwiftLLMToolMacros) | `ToolDefinition` and `JSONSchemaValue` types | Integration targets |
-| [swift-argument-parser](https://github.com/apple/swift-argument-parser) | CLI argument parsing | Example executables |
+| [Yams](https://github.com/jpsim/Yams) | YAML frontmatter parsing | always |
+| [SwiftOpenResponsesDSL](https://github.com/RichNasz/SwiftOpenResponsesDSL) | [Open Responses API](https://www.openresponses.org/) agent integration *(recommended)* | `responses` |
+| [SwiftChatCompletionsDSL](https://github.com/RichNasz/SwiftChatCompletionsDSL) | Legacy Chat Completions API agent integration | `chat` |
+| [SwiftLLMToolMacros](https://github.com/RichNasz/SwiftLLMToolMacros) | `ToolDefinition` and `JSONSchemaValue` types | `responses` or `chat` |
+| [swift-argument-parser](https://github.com/apple/swift-argument-parser) | CLI argument parsing | always |

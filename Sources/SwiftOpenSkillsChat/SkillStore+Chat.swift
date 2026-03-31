@@ -1,3 +1,4 @@
+#if chat
 import Foundation
 import SwiftOpenSkills
 import SwiftChatCompletionsDSL
@@ -33,4 +34,34 @@ extension SkillStore {
             }
         )
     }
+
+    /// Creates an `AgentTool` for the `list_skills` function, compatible with
+    /// `SwiftChatCompletionsDSL`.
+    ///
+    /// The handler returns the current skill catalog as a pretty-printed JSON array.
+    /// Accepts an optional `{"style":"detailed"}` argument to include `whenToUse` and
+    /// `allowedTools` in each entry.
+    ///
+    /// - Returns: An `AgentTool` ready to pass to `Agent` or `SkillsAgent`.
+    public func listSkillsChatAgentTool() -> AgentTool {
+        let toolDef = ToolDefinition(
+            name: SkillStore.listSkillsToolName,
+            description: SkillStore.listSkillsToolDescription,
+            parameters: .object(
+                properties: [
+                    ("style", .string(
+                        description: "Optional. \"compact\" (default) or \"detailed\"."
+                    ))
+                ],
+                required: []
+            )
+        )
+        return AgentTool(
+            tool: toolDef,
+            handler: { [self] argumentsJSON in
+                try await self.listSkillsHandler(argumentsJSON: argumentsJSON)
+            }
+        )
+    }
 }
+#endif

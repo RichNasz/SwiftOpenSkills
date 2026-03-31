@@ -84,6 +84,9 @@ public actor SkillDiscovery {
                 do {
                     let skill = try SkillParser.parse(fileURL: skillFileURL, slug: slug)
                     discoveredSlugs.insert(slug)
+                    for alias in skill.aliases {
+                        discoveredSlugs.insert(alias)
+                    }
                     skills.append(skill)
                 } catch let error as SkillError {
                     failures.append(DiscoveryFailure(directoryURL: itemURL, error: error))

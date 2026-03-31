@@ -12,4 +12,6 @@ public enum SkillError: Error, Sendable, Equatable {
     case emptyInstructions(path: String)
     /// No skill with the given slug was found in the store.
     case skillNotFound(slug: String)
+    /// The `name` field fails slug-format constraints or does not match the directory name.
+    case invalidName(path: String, reason: String)
 }

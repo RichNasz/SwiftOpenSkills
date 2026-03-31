@@ -1,3 +1,4 @@
+#if responses
 import Foundation
 import SwiftOpenSkills
 import SwiftOpenResponsesDSL
@@ -62,3 +63,4 @@ extension Agent {
         )
     }
 }
+#endif

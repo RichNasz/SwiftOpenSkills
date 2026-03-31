@@ -1,5 +1,5 @@
 ---
-name: Skill With Resources
+name: with-resources
 description: A skill that has files in its resources directory.
 ---
 

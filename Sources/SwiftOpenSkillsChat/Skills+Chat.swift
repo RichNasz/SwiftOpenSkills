@@ -1,3 +1,4 @@
+#if chat
 import Foundation
 import SwiftOpenSkills
 import SwiftChatCompletionsDSL
@@ -26,6 +27,11 @@ public struct Skills: Sendable {
     /// Resolves the `AgentTool` for `activate_skill` from the store.
     public func asAgentTool() async -> AgentTool {
         await store.chatAgentTool()
+    }
+
+    /// Resolves the `AgentTool` for `list_skills` from the store.
+    public func asListSkillsTool() async -> AgentTool {
+        await store.listSkillsChatAgentTool()
     }
 
     /// Returns the system prompt section generated from the store's current catalog.
@@ -93,3 +99,4 @@ extension Agent {
         )
     }
 }
+#endif

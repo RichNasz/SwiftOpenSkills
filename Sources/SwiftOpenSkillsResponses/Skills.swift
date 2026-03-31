@@ -1,3 +1,4 @@
+#if responses
 import Foundation
 import SwiftOpenSkills
 import SwiftOpenResponsesDSL
@@ -31,8 +32,14 @@ public struct Skills: Sendable {
         await store.responsesAgentTool(strict: strict)
     }
 
+    /// Resolves the `AgentTool` for `list_skills` from the store.
+    public func asListSkillsTool(strict: Bool? = nil) async -> AgentTool {
+        await store.listSkillsAgentTool(strict: strict)
+    }
+
     /// Returns the system prompt section generated from the store's current catalog.
     public func systemPromptSection() async -> String {
         await store.catalog().systemPromptSection()
     }
 }
+#endif

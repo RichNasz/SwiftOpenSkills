@@ -1,5 +1,5 @@
 ---
-name: Valid Skill
+name: valid-skill
 description: A fully valid skill with all optional fields.
 version: 1.0.0
 author: Test Author

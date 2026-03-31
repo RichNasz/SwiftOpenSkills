@@ -9,7 +9,8 @@ public struct Skill: Sendable, Equatable, Identifiable {
     /// Used as the argument to `activate_skill`.
     public let id: String
 
-    /// Human-readable name from YAML frontmatter.
+    /// Slug-format name from YAML frontmatter. Always equals `id`.
+    /// Per the Agent Skills spec: lowercase alphanumeric and hyphens only, matches the directory name.
     public let name: String
 
     /// Short description from YAML frontmatter, shown in the skill catalog.
@@ -29,6 +30,28 @@ public struct Skill: Sendable, Equatable, Identifiable {
 
     /// Absolute path to the directory containing this skill's SKILL.md.
     public let directoryURL: URL
+
+    /// Longer-form description of when to invoke this skill.
+    /// Shown in the detailed system prompt section to guide LLM decision-making.
+    public let whenToUse: String?
+
+    /// A natural-language hint describing accepted arguments for parameterized skills.
+    public let argumentHint: String?
+
+    /// Alternative slugs that also activate this skill. Canonical slug is `id`.
+    public let aliases: [String]
+
+    /// Tools this skill requires. Informational — not enforced at runtime.
+    public let allowedTools: [String]
+
+    /// License name or reference to a bundled license file.
+    public let license: String?
+
+    /// Environment requirements: intended product, system packages, network access, etc.
+    public let compatibility: String?
+
+    /// Arbitrary key-value metadata. The spec-blessed extension point for custom properties.
+    public let metadata: [String: String]
 
     /// Absolute URL of the SKILL.md file itself.
     public var skillFileURL: URL {

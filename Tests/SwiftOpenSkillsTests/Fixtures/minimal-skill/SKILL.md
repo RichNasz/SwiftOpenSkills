@@ -1,5 +1,5 @@
 ---
-name: Minimal Skill
+name: minimal-skill
 description: Only the required fields are present.
 ---
 
